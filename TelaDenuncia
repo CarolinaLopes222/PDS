@@ -1,0 +1,91 @@
+package pi.ifrn.hidroline.classes;
+
+
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.Toast;
+
+
+import java.sql.SQLException;
+
+import pi.ifrn.hidroline.R;
+import pi.ifrn.hidroline.conexao.Banco;
+
+public class Ouvidoria extends AppCompatActivity {
+
+    private ListView lv;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_tela_ouvidoria);
+
+
+        clicouSpinner();
+    }
+    public void denuncia (View v){
+            setContentView(R.layout.activity_tela_ouvidoria);
+        }
+    public void clicou (View v) {
+        Toast.makeText(this.getBaseContext(), "Mensagem enviada com sucesso!", Toast.LENGTH_LONG).show();
+
+    }
+
+    public void clicouSpinner(){
+        final AutoCompleteTextView textView = (AutoCompleteTextView) findViewById(R.id.actextBairro);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.meusbairros));
+        textView.setAdapter(adapter);
+        //set spinner
+        final Spinner spinner = (Spinner) findViewById(R.id.spinnerBairros);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                textView.setText(spinner.getSelectedItem().toString());
+                textView.dismissDropDown();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                textView.setText(spinner.getSelectedItem().toString());
+                textView.dismissDropDown();
+            }
+        });
+
+
+    }
+    public void inserirDenuncia(View v) {
+        Spinner bairroD = (Spinner) findViewById(R.id.spinnerBairros);
+        int bairro = (int) bairroD.getSelectedItemId() + 1;
+
+
+        EditText ruaD = (EditText) findViewById(R.id.textRua);
+        String rua = ruaD.getText().toString();
+
+        EditText denunciaD = (EditText) findViewById(R.id.textDescricao);
+
+        String denuncia = denunciaD.getText().toString();
+
+        EditText grauD = (EditText) findViewById(R.id.textGrauNecessidade);
+        String grau_necessidade = grauD.getText().toString();
+
+
+        Banco b = new Banco();
+        try {
+            b.inserirDenuncia(bairro, rua, denuncia, grau_necessidade);
+            Toast.makeText(this.getBaseContext(), "Mensagem enviada com sucesso!", Toast.LENGTH_LONG).show();
+
+        } catch (SQLException e) {
+            Toast.makeText(this.getBaseContext(), "Ocorreu um erro, por favor, tente mais tarde.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+
+    }
+
